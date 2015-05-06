@@ -1,0 +1,4 @@
+hostname	oniddb.cws.oregonstate.edu
+Database Name	swansonb-db
+Username	swansonb-db
+Password	bJQTJOy1391Yjoex
