@@ -52,8 +52,9 @@ if(isset($_POST['ACTION'])){
   if($_POST['ACTION'] == "deleteVideo"){
     //$video = intval(var)
     fwrite($LogFile, "deleting video {$_POST['id']} , ");
-    $mysqli->query("DELETE FROM records WHERE ID={$_POST['id']}");
-
+    $dltstmt = $mysqli->prepare("DELETE FROM records WHERE id=?");
+    $dltstmt->bind_param("i",$_POST['id']);
+    $dltstmt->execute();
   }
   //user rented/returned a video
   if($_POST['ACTION'] == "rent"){
