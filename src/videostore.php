@@ -44,6 +44,15 @@ $mysqli->query("CREATE TABLE IF NOT EXISTS records (
             ?>
           </select>
           <input type='submit' value='Filter Videos by Category' />
+
+          <?php
+          echo "<form id='deleteall' action='$SELF' method='post'>";
+          ?>
+            <input type="submit" value="Delete All Videos">
+          </form>
+
+          
+
         </form>
     </body>
 </html>
