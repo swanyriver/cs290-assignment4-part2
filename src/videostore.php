@@ -80,10 +80,15 @@ if(isset($_POST['ACTION'])){
             <input type='hidden' name='ACTION' value='categoryfilter'>
             <select name='category'>";
               
-              //generate category items here
-              $ctgRslt = $mysqli->query("SELECT DISTINCT (category) FROM records");
-              //while($ctgRslt->)
-              //<option value='testa'>testa</option>
+        //generate category items here
+        $ctgStmt = $mysqli->prepare("SELECT DISTINCT (category) FROM records");
+        $ctgStmt->execute();
+        $ctgStmt->bind_result($nextCat);
+        while($ctgStmt->fetch()){
+          echo "<option value='$nextCat'>$nextCat</option>
+          ";
+        }
+        
         echo "   
             </select>
             <input type='submit' value='Filter Videos by Category'>
