@@ -46,7 +46,10 @@ if(isset($_POST['ACTION'])){
   }
   //user added a video
   if($_POST['ACTION'] == "addvideo"){
-
+    fwrite($LogFile, "adding video:{$_POST['name']}, ");
+    $addstmt = $mysqli->prepare("INSERT INTO records ( name, category, length ) VALUES (?, ?, ?)");
+    $addstmt->bind_param("ssi", $_POST['name'], $_POST['category'], $_POST['length']);
+    $addstmt->execute();
   }
   //user deleted a video
   if($_POST['ACTION'] == "deleteVideo"){
