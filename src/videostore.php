@@ -58,7 +58,11 @@ if(isset($_POST['ACTION'])){
   }
   //user rented/returned a video
   if($_POST['ACTION'] == "rent"){
-
+    fwrite($LogFile, "renting video {$_POST['id']} rented:{$_POST['rented']}, ");
+    $rentstmt = $mysqli->prepare("UPDATE records SET rented=? WHERE id=?");
+    $rented = !$_POST['rented'];
+    $rentstmt->bind_param("ii", $rented, $_POST['id']);
+    $rentstmt->execute();
   }
 
 }
@@ -136,7 +140,7 @@ if(isset($_POST['ACTION'])){
             <td> $name <td> $category <td> $length <td> 
             <form name='rent' action = $SELF method ='post'>
               <input type='hidden' name='ACTION' value='rent'>
-              <input type='hidden' name='returning' value='$rented'>
+              <input type='hidden' name='rented' value='$rented'>
               <input type='hidden' name='id' value='$id'>
               $rentText[$rented]
               <input type='submit' value='$rentButton[$rented]'>
