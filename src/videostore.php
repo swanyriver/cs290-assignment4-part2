@@ -42,16 +42,23 @@ if(isset($_POST['ACTION'])){
   }
   //user chose to delete all
   if($_POST['ACTION'] == "deleteAll"){
-
+    $mysqli->query("TRUNCATE TABLE records");
   }
   //user added a video
   if($_POST['ACTION'] == "addvideo"){
 
   }
-  // //user 
-  // if($_POST['ACTION'] == ""){
+  //user deleted a video
+  if($_POST['ACTION'] == "deleteVideo"){
+    //$video = intval(var)
+    fwrite($LogFile, "deleting video {$_POST['id']} , ");
+    $mysqli->query("DELETE FROM records WHERE ID={$_POST['id']}");
 
-  // }
+  }
+  //user rented/returned a video
+  if($_POST['ACTION'] == "rent"){
+
+  }
 
 }
 
