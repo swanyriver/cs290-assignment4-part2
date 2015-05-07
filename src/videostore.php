@@ -88,7 +88,7 @@ if(isset($_POST['ACTION'])){
           echo "<option value='$nextCat'>$nextCat</option>
           ";
         }
-        
+
         echo "   
             </select>
             <input type='submit' value='Filter Videos by Category'>
@@ -117,7 +117,24 @@ if(isset($_POST['ACTION'])){
         <table id="videos" >
           <thead><tr><th>Name<th>Category<th>Length<th>Avalability<th></thead>
           <?php
-            //generate table here from database
+          $vidStmt = $mysqli->prepare("SELECT * FROM records");
+          $vidStmt->execute();
+          $vidStmt->bind_result($id,$name,$category,$length,$rented);
+          $rentText = array("Avalabile","Checked Out");
+          $rentButton = array("Rent","Return");
+          while($vidStmt->fetch()){
+            //fwrite($LogFile, $id . ", " . $name . ", " . $category . ", " . $length . ", " . $rented);
+            echo "<tr>
+            <td> $name <td> $category <td> $length <td> 
+            <form name='rent' action = $SELF method ='post'>
+              <input type='hidden' name='ACTION' value='rent'>
+              <input type='hidden' name='returning' value='$rented'>
+              $rentText[$rented]
+              <input type='submit' value='$rentButton[$rented]'>
+            </form>
+            <td> delete will go here
+            ";
+          }
           ?>
         </table>
 
