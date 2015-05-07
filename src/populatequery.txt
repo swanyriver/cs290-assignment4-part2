@@ -1,0 +1,6 @@
+INSERT INTO records (name,category,length) VALUES
+("Avengers","action",250),
+("10 minutes","indie",10),
+("Cypress","mumblecore",120),
+("Guardians of the Galaxy","action",230),
+("RED","comedy",90);
