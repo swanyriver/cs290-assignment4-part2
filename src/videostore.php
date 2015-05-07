@@ -129,6 +129,7 @@ if(isset($_POST['ACTION'])){
             <form name='rent' action = $SELF method ='post'>
               <input type='hidden' name='ACTION' value='rent'>
               <input type='hidden' name='returning' value='$rented'>
+              <input type='hidden' name='id' value='$id'>
               $rentText[$rented]
               <input type='submit' value='$rentButton[$rented]'>
             </form>
