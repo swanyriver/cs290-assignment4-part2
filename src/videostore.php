@@ -3,16 +3,20 @@ ini_set('display_errors', 'On');
 
 include "storedInfo.php"; //contains hostname/username/password/databasename
 
+//set up logfile and form action adress
 $LogFile = fopen("logfile.txt", "w");
 $SELF = "\"http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "\"";
 
+//connect to database with created mysqli object
 $mysqli = new mysqli($hostname, $Username, $Password, $DatabaseName);
 if ($mysqli->connect_errno || $mysqli->connect_error)
 {
   fwrite($LogFile, "error #" . $mysqli->connect_errno . ":" . $mysqli->connect_error);
-  return;
-} else fwrite($LogFile, "sucessful connection to database");
+  safeExit("Unable to connect to database");
+} else fwrite($LogFile, "sucessful connection to database,  ");
 
+
+//create table if it doesnt exist
 $mysqli->query("CREATE TABLE IF NOT EXISTS records (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) UNIQUE NOT NULL,
@@ -20,6 +24,38 @@ $mysqli->query("CREATE TABLE IF NOT EXISTS records (
   length INT UNSIGNED NOT NULL,
   rented BOOL DEFAULT FALSE
   )");
+
+function safeExit($msg){
+  echo $msg;
+  fclose($GLOBALS['LogFile']);
+  exit();
+}
+
+//check for a form action, modify database acordingly
+if(isset($_POST['ACTION'])){
+  
+  fwrite($LogFile, "user action:" . $_POST['ACTION'] . ",  ");
+
+  //user filtered categories 
+  if($_POST['ACTION'] == "categoryfilter"){
+
+  }
+  //user chose to delete all
+  if($_POST['ACTION'] == "deleteAll"){
+
+  }
+  //user added a video
+  if($_POST['ACTION'] == "addvideo"){
+
+  }
+  // //user 
+  // if($_POST['ACTION'] == ""){
+
+  // }
+
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -34,23 +70,34 @@ $mysqli->query("CREATE TABLE IF NOT EXISTS records (
         </style>
     </head>
     <body>
-        <form id='categoryfilter' action = <?php echo $SELF; ?> method ='post'>
-          <input type='hidden' name='ACTION' value='categoryfilter'>
-          <select name='category'>
-            <?php
-            //generate category items here
-            //<option value='testa'>testa</option>
-            ?>
-          </select>
-          <input type='submit' value='Filter Videos by Category'>
-        </form>
+      <?php
+      $fieldcount = $mysqli->query("SELECT COUNT(*) FROM records");
+      $fieldcount = $fieldcount->fetch_array(MYSQLI_NUM)[0];
+      fwrite($LogFile, "rowcount: ". $fieldcount);
+      if($fieldcount){
+        echo "
+          <form id='categoryfilter' action = $SELF method ='post'>
+            <input type='hidden' name='ACTION' value='categoryfilter'>
+            <select name='category'>";
+              
+              //generate category items here
+              $ctgRslt = $mysqli->query("SELECT DISTINCT (category) FROM records");
+              //while($ctgRslt->)
+              //<option value='testa'>testa</option>
+        echo "   
+            </select>
+            <input type='submit' value='Filter Videos by Category'>
+          </form>
 
-        <form id='deleteAll' action = <?php echo $SELF; ?> method ='post'>
-          <input type='hidden' name='ACTION' value='deleteAll'>
-          <input type="submit" value="Delete All Videos">
-        </form>
+          <form id='deleteAll' action = $SELF method ='post'>
+            <input type='hidden' name='ACTION' value='deleteAll'>
+            <input type='submit' value='Delete All Videos'>
+          </form>
 
-        <br>
+          <br>
+          ";
+      }
+      ?>
 
         <form id='addvideo' action = <?php echo $SELF; ?> method ='post'>
           <fieldset>
