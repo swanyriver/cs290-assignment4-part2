@@ -133,7 +133,11 @@ if(isset($_POST['ACTION'])){
               $rentText[$rented]
               <input type='submit' value='$rentButton[$rented]'>
             </form>
-            <td> delete will go here
+            <td>  <form name='delete' action = $SELF method ='post'>
+              <input type='hidden' name='ACTION' value='deleteVideo'>
+              <input type='hidden' name='id' value='$id'>
+              <input type='submit' value='Delete Video'>
+            </form>
             ";
           }
           ?>
@@ -141,3 +145,5 @@ if(isset($_POST['ACTION'])){
 
     </body>
 </html>
+
+<?php fclose($GLOBALS['LogFile']); ?>
