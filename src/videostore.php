@@ -3,6 +3,8 @@ ini_set('display_errors', 'On');
 
 include "storedInfo.php"; //contains hostname/username/password/databasename
 
+$SELF = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+
 $mysqli = new mysqli($hostname, $Username, $Password, $DatabaseName);
 if ($mysqli->connect_errno || $mysqli->connect_error)
 {
@@ -16,7 +18,7 @@ $mysqli->query("CREATE TABLE IF NOT EXISTS records (
   category VARCHAR(255) NOT NULL,
   length INT UNSIGNED NOT NULL,
   rented BOOL DEFAULT FALSE
-  )"); 
+  )");
 ?>
 
 <!DOCTYPE html>
@@ -31,14 +33,17 @@ $mysqli->query("CREATE TABLE IF NOT EXISTS records (
         </style>
     </head>
     <body>
-        <form action = "http://web.engr.oregonstate.edu/~osterbit/2/repo/class-content/form_tests/Formtest.php" method ="post">
-          <input type="hidden" name="ACTION" value="categoryfilter" />
-          <select name="category">
-            <option value="testa">testa</option>
-            <option value="testb">testb</option>
-            <option value="testc">testc</option>
+        <?php
+        echo "<form id='categoryfilter' action = '$SELF' method ='post'>";
+        ?>
+          <input type='hidden' name='ACTION' value='categoryfilter' />
+          <select name='category'>
+            <?php
+            //generate category items here
+            //<option value='testa'>testa</option>
+            ?>
           </select>
-          <input type="submit" value="Filter Videos by Category" />
+          <input type='submit' value='Filter Videos by Category' />
         </form>
     </body>
 </html>
