@@ -3,18 +3,19 @@ ini_set('display_errors', 'On');
 
 include "storedInfo.php"; //contains hostname/username/password/databasename
 
+$LogFile = fopen("logfile.txt", "w");
 $SELF = "\"http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "\"";
 
 $mysqli = new mysqli($hostname, $Username, $Password, $DatabaseName);
 if ($mysqli->connect_errno || $mysqli->connect_error)
 {
-  echo "error #" . $mysqli->connect_errno . ":" . $mysqli->connect_error;
+  fwrite($LogFile, "error #" . $mysqli->connect_errno . ":" . $mysqli->connect_error);
   return;
-}
+} else fwrite($LogFile, "sucessful connection to database");
 
 $mysqli->query("CREATE TABLE IF NOT EXISTS records (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) UNIQUE NOT NULL,
   category VARCHAR(255) NOT NULL,
   length INT UNSIGNED NOT NULL,
   rented BOOL DEFAULT FALSE
