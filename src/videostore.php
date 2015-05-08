@@ -3,6 +3,11 @@ ini_set('display_errors', 'On');
 
 include "storedInfo.php"; //contains hostname/username/password/databasename
 
+$tstring = '';
+if($tstring) echo "empty string true <br>";
+if($hostname) echo "full string true";
+exit();
+
 //set up logfile and form action adress
 $LogFile = fopen("logfile.txt", "w");
 $SELF = "\"http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "\"";
@@ -49,7 +54,7 @@ if(isset($_POST['ACTION'])){
   //user added a video
   if($_POST['ACTION'] == "addvideo"){
 
-    //todo verify entries
+    //verify entries
     if (!isset($_POST['name']) || $_POST['name']=='' || $_POST['name'] == NULL){
       $isError = true;
       $errorMsg = $errorMsg . "name must be supplied <br>";
@@ -64,6 +69,7 @@ if(isset($_POST['ACTION'])){
       $errorMsg = $errorMsg . "length must be supplied and must be numeric <br>";
     }
 
+    //add video to database if no errors
     if(!$isError){
       fwrite($LogFile, "adding video:{$_POST['name']}, ");
       $addstmt = $mysqli->prepare("INSERT INTO records ( name, category, length ) VALUES (?, ?, ?)");
