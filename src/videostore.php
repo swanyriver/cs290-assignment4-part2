@@ -3,7 +3,7 @@ ini_set('display_errors', 'On');
 
 include "storedInfo.php"; //contains hostname/username/password/databasename
 
-//set up logfile and form action adress
+//set up logfile and form action adress, category filter, error message
 $LogFile = fopen("logfile.txt", "w");
 $SELF = "\"http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "\"";
 $isError = false;
@@ -17,7 +17,9 @@ $mysqli = new mysqli($hostname, $Username, $Password, $DatabaseName);
 if ($mysqli->connect_errno || $mysqli->connect_error)
 {
   fwrite($LogFile, "error #" . $mysqli->connect_errno . ":" . $mysqli->connect_error);
-  safeExit("Unable to connect to database");
+  echo "Unable to connect to database";
+  fclose($logfile);
+  exit();
 } else fwrite($LogFile, "sucessful connection to database,  ");
 
 
@@ -30,14 +32,12 @@ $mysqli->query("CREATE TABLE IF NOT EXISTS records (
   rented BOOL DEFAULT FALSE
   )");
 
-function safeExit($msg){
-  echo $msg;
-  fclose($GLOBALS['LogFile']);
-  exit();
-}
 
-//check for a form action, modify database acordingly
+////////////////////////////////////////////////////////////////////////////////////////
+///////////MODIFY DATABASE ACORDING TO USER ACTION DEFINED IN POST ARRAY ///////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
+//check for a form action///
 if(isset($_POST['ACTION'])){
   
   fwrite($LogFile, "user action:" . $_POST['ACTION'] . ",  ");
@@ -79,7 +79,7 @@ if(isset($_POST['ACTION'])){
         else $errorMsg = $errorMsg . "Error adding {$_POST['name']} to records <br>";
       }
 
-      //TODO, IF ADDED MOVIE IS NOT IN THIS CATEGORY, DESELECT CATEGORY
+      //IF ADDED MOVIE IS NOT IN THIS CATEGORY, DESELECT CATEGORY
       if( (isset($_POST['category']) &&  $_POST['category'] != $Allcats) && $_POST['category'] != $_POST['categoryADD']){
         $isError = true;
         $errorMsg = $errorMsg . "Your new movie is not in:{$_POST['category']}, Showing all movies <br>";
@@ -89,6 +89,7 @@ if(isset($_POST['ACTION'])){
 
     }
   }
+
   //user deleted a video
   if($_POST['ACTION'] == "deleteVideo"){
     //$video = intval(var)
@@ -97,6 +98,7 @@ if(isset($_POST['ACTION'])){
     $dltstmt->bind_param("i",$_POST['id']);
     $dltstmt->execute();
   }
+
   //user rented/returned a video
   if($_POST['ACTION'] == "rent"){
     fwrite($LogFile, "renting video {$_POST['id']} rented:{$_POST['rented']}, ");
@@ -120,11 +122,14 @@ if( isset($_POST['category']) &&  $_POST['category'] != $Allcats ){
   $crStmt->fetch();
   fwrite($LogFile, "has $catCount entries,   ");
   $crStmt->close();
-  //if not deselect category and inform user
+
+  //if there are entries for category filter, set local variable, and html tag for form input
+  //hidden input tag is inserted to all forms to carry category selection to next page reload
   if($catCount){
     $categorySelected = $_POST['category'];
     $hiddenCategory = "<input type='hidden' name='category' value='$categorySelected'>";
   } else {
+    //no entries, switch to show all and inform user
     $isError = true;
     $errorMsg = $errorMsg . "There are no more {$_POST['category']} movies remaining, showing all movies <br>";
   }
@@ -132,6 +137,10 @@ if( isset($_POST['category']) &&  $_POST['category'] != $Allcats ){
 }
 
 ?>
+
+<!--////////////////////////////////////////////////////////////////////////////////////
+//////DATABASE MANIPULATION COMPLETE,  GENERATE HTML////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////-->
 
 <!DOCTYPE html>
 <html>
@@ -162,18 +171,31 @@ if( isset($_POST['category']) &&  $_POST['category'] != $Allcats ){
 
         </style>
     </head>
+
+
     <body>
       <?php
+
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////FILTER AND DELETE ALL CONTROLS//////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////
+
+      //display error messages if they exist
       if($isError)echo "<div id='errorMsg'> $errorMsg </div>";
 
       echo "<div id='controls'>";
 
+      //count number of rows in database
       $fieldcountQ = $mysqli->query("SELECT COUNT(*) FROM records");
       $fieldcount = $fieldcountQ->fetch_array(MYSQLI_NUM)[0];
       $fieldcountQ->close();
-
       fwrite($LogFile, "rowcount: ". $fieldcount);
+
+      //if there are any entries display filter and delete all controls
       if($fieldcount){
+
+        //category filter dynamiclly generated
         echo "
           <form id='categoryfilter' action = $SELF method ='post'>
             <input type='hidden' name='ACTION' value='categoryfilter'>
@@ -182,7 +204,7 @@ if( isset($_POST['category']) &&  $_POST['category'] != $Allcats ){
               <option value='$Allcats'>All Movies</option>
             ";
               
-        //generate category items here
+        //generate category items from sql query
         $ctgStmt = $mysqli->prepare("SELECT DISTINCT (category) FROM records WHERE category IS NOT NULL");
         $ctgStmt->execute();
         $ctgStmt->bind_result($nextCat);
@@ -208,6 +230,10 @@ if( isset($_POST['category']) &&  $_POST['category'] != $Allcats ){
       }
       ?>
 
+      <!--////////////////////////////////////////////////////////////////////////////////////
+      ////// ADD VIDEOS FORM ////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////-->
+
         <form id='addvideo' action = <?php echo $SELF; ?> method ='post'>
           <fieldset>
             <?php echo $hiddenCategory; ?>
@@ -220,9 +246,20 @@ if( isset($_POST['category']) &&  $_POST['category'] != $Allcats ){
         </form>
         </div>
 
+
+         <!--////////////////////////////////////////////////////////////////////////////////////
+        ////// GENERATED VIDEO INFORMATION TABLE FROM SQL DATABASE  /////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////-->
+
         <table id="videos" >
           <thead><tr><th>Name<th>Category<th>Length<th>Avalability<th></thead>
           <?php
+
+          //inserted into checkout/return button using true:1/false:0 as array index
+          $rentText = array("Avalabile","Checked Out");
+          $rentButton = array("Rent","Return");
+
+          //prepare statement for all entries of category filtered
           if(!$categorySelected){
             $vidStmt = $mysqli->prepare("SELECT * FROM records");
           }else{
@@ -231,10 +268,9 @@ if( isset($_POST['category']) &&  $_POST['category'] != $Allcats ){
           }
           $vidStmt->execute();
           $vidStmt->bind_result($id,$name,$category,$length,$rented);
-          $rentText = array("Avalabile","Checked Out");
-          $rentButton = array("Rent","Return");
+
+          //iterate over all videos in database query, creating <tr> for each
           while($vidStmt->fetch()){
-            //fwrite($LogFile, $id . ", " . $name . ", " . $category . ", " . $length . ", " . $rented);
             echo "<tr>
             <td> $name <td> $category <td> $length <td> 
             <form class='rent' action = $SELF method ='post'>
