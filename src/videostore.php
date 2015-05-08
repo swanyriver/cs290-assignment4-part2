@@ -37,16 +37,6 @@ function safeExit($msg){
 
 //check for a form action, modify database acordingly
 
-//user filtered categories 
-if( isset($_POST['category']) ){
-  fwrite($LogFile, "selected category:{$_POST['category']} ");
-  $categorySelected = $_POST['category'];
-  $hiddenCategory = "<input type='hidden' name='category' value='$categorySelected'>";
-
-  //TODO check that catagory still has entries
-  //if not cat and hidden cat = ''  && output error msg
-}
-
 if(isset($_POST['ACTION'])){
   
   fwrite($LogFile, "user action:" . $_POST['ACTION'] . ",  ");
@@ -113,6 +103,28 @@ if(isset($_POST['ACTION'])){
 
 }
 
+//user filtered categories 
+if( isset($_POST['category']) ){
+  fwrite($LogFile, "selected category:{$_POST['category']} ");
+
+  //check that catagory still has entries
+  $crStmt = $mysqli->prepare("SELECT COUNT(*) FROM records WHERE category = ?");
+  $crStmt->bind_param("s",$_POST['category']);
+  $crStmt->execute();
+  $crStmt->bind_result($catCount);
+  $crStmt->fetch();
+  fwrite($LogFile, "has $catCount entries,   ");
+  $crStmt->close();
+  //if not deselect category and inform user
+  if($catCount){
+    $categorySelected = $_POST['category'];
+    $hiddenCategory = "<input type='hidden' name='category' value='$categorySelected'>";
+  } else {
+    $isError = true;
+    $errorMsg = $errorMsg . "there are no more {$_POST['category']} movies remaining, showing all movies <br>";
+  }
+
+}
 
 ?>
 
@@ -140,8 +152,7 @@ if(isset($_POST['ACTION'])){
           #catlist {width:45%; background-color: #FFFFFF;}
           #errorMsg {font-weight: bold;
             font-size: large;
-            color: red;
-            text-align: center;}
+            color: red;}
           .rent input:last-child {float: right; margin-left: 10px}
 
         </style>
@@ -152,8 +163,10 @@ if(isset($_POST['ACTION'])){
 
       echo "<div id='controls'>";
 
-      $fieldcount = $mysqli->query("SELECT COUNT(*) FROM records");
-      $fieldcount = $fieldcount->fetch_array(MYSQLI_NUM)[0];
+      $fieldcountQ = $mysqli->query("SELECT COUNT(*) FROM records");
+      $fieldcount = $fieldcountQ->fetch_array(MYSQLI_NUM)[0];
+      $fieldcountQ->close();
+
       fwrite($LogFile, "rowcount: ". $fieldcount);
       if($fieldcount){
         echo "
@@ -173,6 +186,7 @@ if(isset($_POST['ACTION'])){
           echo "<option value='$nextCat' $selected>$nextCat</option>
           ";
         }
+        $ctgStmt->close();
 
         echo "   
             </select>
@@ -234,6 +248,7 @@ if(isset($_POST['ACTION'])){
             </form>
             ";
           }
+          $vidStmt->close();
           ?>
         </table>
 
