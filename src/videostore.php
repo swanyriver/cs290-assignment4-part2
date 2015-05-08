@@ -10,6 +10,7 @@ $isError = false;
 $errorMsg = '';
 $categorySelected = '';
 $hiddenCategory = '';
+$Allcats = 'AllCategories';
 
 //connect to database with created mysqli object
 $mysqli = new mysqli($hostname, $Username, $Password, $DatabaseName);
@@ -79,7 +80,7 @@ if(isset($_POST['ACTION'])){
       }
 
       //TODO, IF ADDED MOVIE IS NOT IN THIS CATEGORY, DESELECT CATEGORY
-      if(isset($_POST['category']) && $_POST['category'] != $_POST['categoryADD']){
+      if( (isset($_POST['category']) &&  $_POST['category'] != $Allcats) && $_POST['category'] != $_POST['categoryADD']){
         $isError = true;
         $errorMsg = $errorMsg . "Your new movie is not in:{$_POST['category']}, Showing all movies <br>";
         unset($_POST['category']);
@@ -108,7 +109,7 @@ if(isset($_POST['ACTION'])){
 }
 
 //user filtered categories 
-if( isset($_POST['category']) ){
+if( isset($_POST['category']) &&  $_POST['category'] != $Allcats ){
   fwrite($LogFile, "selected category:{$_POST['category']} ");
 
   //check that catagory still has entries
@@ -178,7 +179,7 @@ if( isset($_POST['category']) ){
             <input type='hidden' name='ACTION' value='categoryfilter'>
             <input type='submit' value='Filter Videos by Category'>
             <select id='catlist' name='category'>
-              <option value='AllCategories'>All Movies</option>
+              <option value='$Allcats'>All Movies</option>
             ";
               
         //generate category items here
@@ -222,7 +223,7 @@ if( isset($_POST['category']) ){
         <table id="videos" >
           <thead><tr><th>Name<th>Category<th>Length<th>Avalability<th></thead>
           <?php
-          if(!$categorySelected || $categorySelected == "AllCategories"){
+          if(!$categorySelected){
             $vidStmt = $mysqli->prepare("SELECT * FROM records");
           }else{
             $vidStmt = $mysqli->prepare("SELECT * FROM records WHERE category=?");
