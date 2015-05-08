@@ -23,8 +23,8 @@ if ($mysqli->connect_errno || $mysqli->connect_error)
 $mysqli->query("CREATE TABLE IF NOT EXISTS records (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) UNIQUE NOT NULL,
-  category VARCHAR(255) NOT NULL,
-  length INT UNSIGNED NOT NULL,
+  category VARCHAR(255),
+  length INT UNSIGNED,
   rented BOOL DEFAULT FALSE
   )");
 
@@ -71,8 +71,13 @@ if(isset($_POST['ACTION'])){
     //add video to database if no errors
     if(!$isError){
       fwrite($LogFile, "adding video:{$_POST['name']}, ");
-      $addstmt = $mysqli->prepare("INSERT INTO records ( name, category, length ) VALUES (?, ?, ?)");
-      $addstmt->bind_param("ssi", $_POST['name'], $_POST['category'], $_POST['length']);
+      if($_POST['length']){
+        $addstmt = $mysqli->prepare("INSERT INTO records ( name, category, length ) VALUES (?, ?, ?)");
+        $addstmt->bind_param("ssi", $_POST['name'], $_POST['category'], $_POST['length']);
+      } else {
+        $addstmt = $mysqli->prepare("INSERT INTO records ( name, category) VALUES (?, ?)");
+        $addstmt->bind_param("ss", $_POST['name'], $_POST['category']);
+      }
       $addstmt->execute();
     }
   }
@@ -126,7 +131,7 @@ if(isset($_POST['ACTION'])){
             ";
               
         //generate category items here
-        $ctgStmt = $mysqli->prepare("SELECT DISTINCT (category) FROM records");
+        $ctgStmt = $mysqli->prepare("SELECT DISTINCT (category) FROM records WHERE category!=''");
         $ctgStmt->execute();
         $ctgStmt->bind_result($nextCat);
         while($ctgStmt->fetch()){
