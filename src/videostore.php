@@ -112,13 +112,25 @@ if(isset($_POST['ACTION'])){
         <style type="text/css">
           th {font-weight: bold;}
           th,td {padding:5px; border: solid 1px;}
-          table {border-collapse: collapse; border: solid thick;}
+          table {border-collapse: collapse; 
+            border: solid thick;
+            margin: 5px;}
+          #deleteAll, #categoryfilter {display: inline;}
+          #controls {display: inline-block; 
+            border: 5px double #00FF00;  
+            padding: 5px; 
+            margin: 5px;}
+          #controls fieldset {margin-bottom: 10px; margin-top: 10px}
+          #deleteAll {float: right;}
+
+
         </style>
     </head>
     <body>
       <?php
-
       if($isError)echo "<div id='errorMsg'> $errorMsg </div>";
+
+      echo "<div id='controls'>";
 
       $fieldcount = $mysqli->query("SELECT COUNT(*) FROM records");
       $fieldcount = $fieldcount->fetch_array(MYSQLI_NUM)[0];
@@ -165,6 +177,7 @@ if(isset($_POST['ACTION'])){
             Length (minutes):<input type="text" name="length">
           </fieldset>
         </form>
+        </div>
 
         <table id="videos" >
           <thead><tr><th>Name<th>Category<th>Length<th>Avalability<th></thead>
@@ -183,14 +196,14 @@ if(isset($_POST['ACTION'])){
             //fwrite($LogFile, $id . ", " . $name . ", " . $category . ", " . $length . ", " . $rented);
             echo "<tr>
             <td> $name <td> $category <td> $length <td> 
-            <form name='rent' action = $SELF method ='post'>
+            <form class='rent' action = $SELF method ='post'>
               <input type='hidden' name='ACTION' value='rent'>
               <input type='hidden' name='rented' value='$rented'>
               <input type='hidden' name='id' value='$id'>
               $rentText[$rented]
               <input type='submit' value='$rentButton[$rented]'>
             </form>
-            <td>  <form name='delete' action = $SELF method ='post'>
+            <td>  <form class='delete' action = $SELF method ='post'>
               <input type='hidden' name='ACTION' value='deleteVideo'>
               <input type='hidden' name='id' value='$id'>
               <input type='submit' value='Delete Video'>
