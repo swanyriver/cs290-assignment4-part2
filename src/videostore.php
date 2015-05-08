@@ -3,16 +3,12 @@ ini_set('display_errors', 'On');
 
 include "storedInfo.php"; //contains hostname/username/password/databasename
 
-$tstring = '';
-if($tstring) echo "empty string true <br>";
-if($hostname) echo "full string true";
-exit();
-
 //set up logfile and form action adress
 $LogFile = fopen("logfile.txt", "w");
 $SELF = "\"http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "\"";
 $isError = false;
 $errorMsg = '';
+$categorySelected = '';
 
 //connect to database with created mysqli object
 $mysqli = new mysqli($hostname, $Username, $Password, $DatabaseName);
@@ -45,10 +41,12 @@ if(isset($_POST['ACTION'])){
 
   //user filtered categories 
   if($_POST['ACTION'] == "categoryfilter"){
-
+    fwrite($LogFile, "selected category:{$_POST['category']} ");
+    $categorySelected = $_POST['category'];
   }
   //user chose to delete all
   if($_POST['ACTION'] == "deleteAll"){
+    fwrite($LogFile, "deleting all videos, ");
     $mysqli->query("TRUNCATE TABLE records");
   }
   //user added a video
@@ -122,14 +120,17 @@ if(isset($_POST['ACTION'])){
         echo "
           <form id='categoryfilter' action = $SELF method ='post'>
             <input type='hidden' name='ACTION' value='categoryfilter'>
-            <select name='category'>";
+            <select name='category'>
+              <option value='AllCategories'>All Movies</option>
+            ";
               
         //generate category items here
         $ctgStmt = $mysqli->prepare("SELECT DISTINCT (category) FROM records");
         $ctgStmt->execute();
         $ctgStmt->bind_result($nextCat);
         while($ctgStmt->fetch()){
-          echo "<option value='$nextCat'>$nextCat</option>
+          $selected = ($categorySelected == $nextCat) ? 'selected=selected' : '';
+          echo "<option value='$nextCat' $selected>$nextCat</option>
           ";
         }
 
