@@ -9,6 +9,7 @@ $SELF = "\"http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "\"";
 $isError = false;
 $errorMsg = '';
 $categorySelected = '';
+$hiddenCategory = '';
 
 //connect to database with created mysqli object
 $mysqli = new mysqli($hostname, $Username, $Password, $DatabaseName);
@@ -35,15 +36,21 @@ function safeExit($msg){
 }
 
 //check for a form action, modify database acordingly
+
+//user filtered categories 
+if( isset($_POST['category']) ){
+  fwrite($LogFile, "selected category:{$_POST['category']} ");
+  $categorySelected = $_POST['category'];
+  $hiddenCategory = "<input type='hidden' name='category' value='$categorySelected'>";
+
+  //TODO check that catagory still has entries
+  //if not cat and hidden cat = ''  && output error msg
+}
+
 if(isset($_POST['ACTION'])){
   
   fwrite($LogFile, "user action:" . $_POST['ACTION'] . ",  ");
 
-  //user filtered categories 
-  if($_POST['ACTION'] == "categoryfilter"){
-    fwrite($LogFile, "selected category:{$_POST['category']} ");
-    $categorySelected = $_POST['category'];
-  }
   //user chose to delete all
   if($_POST['ACTION'] == "deleteAll"){
     fwrite($LogFile, "deleting all videos, ");
@@ -72,14 +79,19 @@ if(isset($_POST['ACTION'])){
     if(!$isError){
       fwrite($LogFile, "adding video:{$_POST['name']}, ");
       if(!$_POST['length'])$_POST['length'] = NULL;
-      if(!$_POST['category'])$_POST['category'] = NULL;
+      if(!$_POST['categoryADD'])$_POST['categoryADD'] = NULL;
       $addstmt = $mysqli->prepare("INSERT INTO records ( name, category, length ) VALUES (?, ?, ?)");
-      $addstmt->bind_param("ssi", $_POST['name'], $_POST['category'], $_POST['length']);
+      $addstmt->bind_param("ssi", $_POST['name'], $_POST['categoryADD'], $_POST['length']);
       if(!$addstmt->execute()){
         $isError = true;
         if($addstmt->errno==1062) $errorMsg = "{$_POST['name']} has already been added to the records";
-        else $errorMsg = "Error adding {$_POST['name']} to records";
+        else $errorMsg = $errorMsg . "Error adding {$_POST['name']} to records <br>";
       }
+
+      if($categorySelected){
+        //TODO, IF ADDED MOVIE IS NOT IN THIS CATEGORY, DESELECT CATEGORY
+      }
+
     }
   }
   //user deleted a video
@@ -179,10 +191,11 @@ if(isset($_POST['ACTION'])){
 
         <form id='addvideo' action = <?php echo $SELF; ?> method ='post'>
           <fieldset>
+            <?php echo $hiddenCategory; ?>
             <input type='hidden' name='ACTION' value='addvideo'>
             <input type="submit" value="ADD VIDEO">
             Name:<input type="text" name="name">
-            Category:<input type="text" name="category">
+            Category:<input type="text" name="categoryADD">
             Length (minutes):<input type="text" name="length">
           </fieldset>
         </form>
@@ -206,6 +219,7 @@ if(isset($_POST['ACTION'])){
             echo "<tr>
             <td> $name <td> $category <td> $length <td> 
             <form class='rent' action = $SELF method ='post'>
+              $hiddenCategory
               <input type='hidden' name='ACTION' value='rent'>
               <input type='hidden' name='rented' value='$rented'>
               <input type='hidden' name='id' value='$id'>
@@ -213,6 +227,7 @@ if(isset($_POST['ACTION'])){
               <input type='submit' value='$rentButton[$rented]'>
             </form>
             <td>  <form class='delete' action = $SELF method ='post'>
+              $hiddenCategory
               <input type='hidden' name='ACTION' value='deleteVideo'>
               <input type='hidden' name='id' value='$id'>
               <input type='submit' value='Delete Video'>
