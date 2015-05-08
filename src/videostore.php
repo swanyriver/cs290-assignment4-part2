@@ -6,6 +6,8 @@ include "storedInfo.php"; //contains hostname/username/password/databasename
 //set up logfile and form action adress
 $LogFile = fopen("logfile.txt", "w");
 $SELF = "\"http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "\"";
+$isError = false;
+$errorMsg = '';
 
 //connect to database with created mysqli object
 $mysqli = new mysqli($hostname, $Username, $Password, $DatabaseName);
@@ -46,10 +48,28 @@ if(isset($_POST['ACTION'])){
   }
   //user added a video
   if($_POST['ACTION'] == "addvideo"){
-    fwrite($LogFile, "adding video:{$_POST['name']}, ");
-    $addstmt = $mysqli->prepare("INSERT INTO records ( name, category, length ) VALUES (?, ?, ?)");
-    $addstmt->bind_param("ssi", $_POST['name'], $_POST['category'], $_POST['length']);
-    $addstmt->execute();
+
+    //todo verify entries
+    if (!isset($_POST['name']) || $_POST['name']=='' || $_POST['name'] == NULL){
+      $isError = true;
+      $errorMsg = $errorMsg . "name must be supplied <br>";
+    }
+    if (!isset($_POST['category']) || $_POST['category']=='' || $_POST['category'] == NULL){
+      $isError = true;
+      $errorMsg = $errorMsg . "category must be supplied <br>";
+    }
+    if (!isset($_POST['length']) || $_POST['length']=='' || $_POST['length'] == NULL 
+      || !is_numeric($_POST['length']) ){
+      $isError = true;
+      $errorMsg = $errorMsg . "length must be supplied and must be numeric <br>";
+    }
+
+    if(!$isError){
+      fwrite($LogFile, "adding video:{$_POST['name']}, ");
+      $addstmt = $mysqli->prepare("INSERT INTO records ( name, category, length ) VALUES (?, ?, ?)");
+      $addstmt->bind_param("ssi", $_POST['name'], $_POST['category'], $_POST['length']);
+      $addstmt->execute();
+    }
   }
   //user deleted a video
   if($_POST['ACTION'] == "deleteVideo"){
@@ -86,6 +106,9 @@ if(isset($_POST['ACTION'])){
     </head>
     <body>
       <?php
+
+      if($isError)echo "<div id='errorMsg'> $errorMsg </div>";
+
       $fieldcount = $mysqli->query("SELECT COUNT(*) FROM records");
       $fieldcount = $fieldcount->fetch_array(MYSQLI_NUM)[0];
       fwrite($LogFile, "rowcount: ". $fieldcount);
