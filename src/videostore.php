@@ -122,7 +122,15 @@ if(isset($_POST['ACTION'])){
             margin: 5px;}
           #controls fieldset {margin-bottom: 10px; margin-top: 10px}
           #deleteAll {float: right;}
-
+          #deleteAll input, .delete input:last-child {background-color: #E60000;
+            font-weight: bold;}
+          .delete input:last-child {background-color: #EE4D4D;}
+          #catlist {width:45%; background-color: #FFFFFF;}
+          #errorMsg {font-weight: bold;
+            font-size: large;
+            color: red;
+            text-align: center;}
+          .rent input:last-child {float: right; margin-left: 10px}
 
         </style>
     </head>
@@ -139,7 +147,8 @@ if(isset($_POST['ACTION'])){
         echo "
           <form id='categoryfilter' action = $SELF method ='post'>
             <input type='hidden' name='ACTION' value='categoryfilter'>
-            <select name='category'>
+            <input type='submit' value='Filter Videos by Category'>
+            <select id='catlist' name='category'>
               <option value='AllCategories'>All Movies</option>
             ";
               
@@ -155,7 +164,7 @@ if(isset($_POST['ACTION'])){
 
         echo "   
             </select>
-            <input type='submit' value='Filter Videos by Category'>
+            
           </form>
 
           <form id='deleteAll' action = $SELF method ='post'>
