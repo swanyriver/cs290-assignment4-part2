@@ -1,0 +1,127 @@
+Start: Fri, 8 May 2015 13:03:24 -0700 
+End: Fri, 8 May 2015 13:28:33 -0700 
+Tasks: added comments, section header comments, removed a single call function and migrated code to callee 
+
+Start: Fri, 8 May 2015 12:54:04 -0700 
+End: Fri, 8 May 2015 13:03:24 -0700 
+Tasks: check for all categories selected when setting category string, remove extra check for all categories in category filter query, change all category string to a variable 
+
+Start: Fri, 8 May 2015 12:44:55 -0700 
+End: Fri, 8 May 2015 12:54:04 -0700 
+Tasks: capatalize errors, deselect category when adding videos of different category 
+
+Start: Fri, 8 May 2015 12:15:54 -0700 
+End: Fri, 8 May 2015 12:44:55 -0700 
+Tasks: close queries and statements, deselect category when delete leaves none remaining 
+
+Start: Fri, 8 May 2015 12:13:06 -0700 
+End: Fri, 8 May 2015 12:15:54 -0700 
+Tasks: hidding password file 
+
+Start: Fri, 8 May 2015 12:00:06 -0700 
+End: Fri, 8 May 2015 12:13:06 -0700 
+Tasks: remove databaseinfo 
+
+Start: Thu, 7 May 2015 23:23:12 -0700
+End: Thu, 7 May 2015 23:59:12 -0700
+Tasks: better behaviour on category select and other forms 
+
+Start: Thu, 7 May 2015 22:35:59 -0700 
+End: Thu, 7 May 2015 23:23:12 -0700 
+Tasks: completed styling and reorderd some html elements 
+
+Start: Thu, 7 May 2015 22:00:59 -0700 
+End: Thu, 7 May 2015 22:35:59 -0700 
+Tasks: styled control panel 
+
+Start: Thu, 7 May 2015 19:55:20 -0700 
+End: Thu, 7 May 2015 19:55:20 -0700 
+Tasks: outputing error message for duplicate video 
+
+Start: Thu, 7 May 2015 18:52:17 -0700 
+End: Thu, 7 May 2015 19:46:37 -0700 
+Tasks: use null values when no field entered 
+
+Start: Thu, 7 May 2015 18:01:57 -0700 
+End: Thu, 7 May 2015 18:52:17 -0700 
+Tasks: corrected empty field behavior on length and category, feature complete 
+
+Start: Thu, 7 May 2015 17:42:37 -0700 
+End: Thu, 7 May 2015 18:01:57 -0700 
+Tasks: filter by category, validate for negative lengths 
+
+Start: Thu, 7 May 2015 17:23:09 -0700 
+End: Thu, 7 May 2015 17:42:37 -0700 
+Tasks: filter category recieved and set as default on dropdown 
+
+Start: Thu, 7 May 2015 17:15:42 -0700 
+End: Thu, 7 May 2015 17:23:09 -0700 
+Tasks: testing empty string truth evaluation 
+
+Start: Thu, 7 May 2015 16:18:21 -0700 
+End: Thu, 7 May 2015 17:15:42 -0700 
+Tasks: error checking add video forms, printing error message in html 
+
+Start: Thu, 7 May 2015 16:08:42 -0700 
+End: Thu, 7 May 2015 16:18:21 -0700 
+Tasks: added prepared statement for adding movie 
+
+Start: Thu, 7 May 2015 15:55:08 -0700 
+End: Thu, 7 May 2015 16:08:42 -0700 
+Tasks: rent or return via prepared statement 
+
+Start: Thu, 7 May 2015 15:39:56 -0700 
+End: Thu, 7 May 2015 15:55:08 -0700 
+Tasks: changed delete video to use prepared statement 
+
+Start: Thu, 7 May 2015 15:08:40 -0700 
+End: Thu, 7 May 2015 15:39:56 -0700 
+Tasks: implemented delete all and delete video buttons 
+
+Start: Thu, 7 May 2015 15:04:43 -0700 
+End: Thu, 7 May 2015 15:08:40 -0700 
+Tasks: made video delete button, close logfile at end 
+
+Start: Thu, 7 May 2015 14:59:04 -0700 
+End: Thu, 7 May 2015 15:04:43 -0700 
+Tasks: tested dynamic checkout button and form submission with hidden inputs for id and rented boolean 
+
+Start: Thu, 7 May 2015 14:37:07 -0700 
+End: Thu, 7 May 2015 14:59:04 -0700 
+Tasks: make an html table from sql, dynamicly create checkout button 
+
+Start: Thu, 7 May 2015 14:21:44 -0700 
+End: Thu, 7 May 2015 14:37:07 -0700 
+Tasks: reading list of categories 
+
+Start: Thu, 7 May 2015 14:47:30 -0700 
+End: Thu, 7 May 2015 14:21:44 -0700 
+Tasks: wrapped delete all and category select in an if statement, not displayed if table empty, long time to discover how to retrieve returned result of mysqli query,  used onid sql queries to test these conditions 
+
+Start: Thu, 7 May 2015 12:32:25 -0700 
+End: Thu, 7 May 2015 12:47:30 -0700 
+Tasks: added values to database for testing 
+
+Start: Thu, 7 May 2015 12:00:25 -0700 
+End: Thu, 7 May 2015 12:32:25 -0700 
+Tasks: added logfile, added UNIQUE to name field 
+
+Start: Wed, 6 May 2015 22:52:43 -0700 
+End: Wed, 6 May 2015 23:11:17 -0700 
+Tasks: html shell is ready now must fill in sql calls to fill in table data 
+
+Start: Wed, 6 May 2015 22:48:48 -0700 
+End: Wed, 6 May 2015 22:52:43 -0700 
+Tasks: about to move php tag inside form tag 
+
+Start: Wed, 6 May 2015 22:35:30 -0700 
+End: Wed, 6 May 2015 22:48:48 -0700 
+Tasks: generate a self address for form action 
+
+Start: Wed, 6 May 2015 22:00:30 -0700 
+End: Wed, 6 May 2015 22:35:30 -0700 
+Tasks: started html, tested dropdown menu, tested using hidden input to distingush form being submited, and tested reciept of post values 
+
+Start: Tue, 5 May 2015 22:00:33 -0700 
+End: Tue, 5 May 2015 22:39:33 -0700 
+Tasks: database connects succesfully 
