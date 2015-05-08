@@ -57,15 +57,16 @@ if(isset($_POST['ACTION'])){
       $isError = true;
       $errorMsg = $errorMsg . "name must be supplied <br>";
     }
-    if (!isset($_POST['category']) || $_POST['category']=='' || $_POST['category'] == NULL){
-      $isError = true;
-      $errorMsg = $errorMsg . "category must be supplied <br>";
-    }
-    if (!isset($_POST['length']) || $_POST['length']=='' || $_POST['length'] == NULL 
-      || !is_numeric($_POST['length']) ){
-      $isError = true;
-      $errorMsg = $errorMsg . "length must be supplied and must be numeric <br>";
-    }
+    if (!(!isset($_POST['length']) || $_POST['length']=='' || $_POST['length'] == NULL)){
+      if(!is_numeric($_POST['length'])){
+        $isError = true;
+        $errorMsg = $errorMsg . "length must be numeric <br>";
+      }
+      else if($_POST['length']<0){
+        $isError = true;
+        $errorMsg = $errorMsg . "length must a positive number <br>";
+      }
+    } 
 
     //add video to database if no errors
     if(!$isError){
@@ -162,7 +163,12 @@ if(isset($_POST['ACTION'])){
         <table id="videos" >
           <thead><tr><th>Name<th>Category<th>Length<th>Avalability<th></thead>
           <?php
-          $vidStmt = $mysqli->prepare("SELECT * FROM records");
+          if(!$categorySelected || $categorySelected == "AllCategories"){
+            $vidStmt = $mysqli->prepare("SELECT * FROM records");
+          }else{
+            $vidStmt = $mysqli->prepare("SELECT * FROM records WHERE category=?");
+            $vidStmt->bind_param("s",$categorySelected);
+          }
           $vidStmt->execute();
           $vidStmt->bind_result($id,$name,$category,$length,$rented);
           $rentText = array("Avalabile","Checked Out");
