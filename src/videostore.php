@@ -75,7 +75,11 @@ if(isset($_POST['ACTION'])){
       if(!$_POST['category'])$_POST['category'] = NULL;
       $addstmt = $mysqli->prepare("INSERT INTO records ( name, category, length ) VALUES (?, ?, ?)");
       $addstmt->bind_param("ssi", $_POST['name'], $_POST['category'], $_POST['length']);
-      $addstmt->execute();
+      if(!$addstmt->execute()){
+        $isError = true;
+        if($addstmt->errno==1062) $errorMsg = "{$_POST['name']} has already been added to the records";
+        else $errorMsg = "Error adding {$_POST['name']} to records";
+      }
     }
   }
   //user deleted a video
