@@ -52,16 +52,16 @@ if(isset($_POST['ACTION'])){
     //verify entries
     if (!isset($_POST['name']) || $_POST['name']=='' || $_POST['name'] == NULL){
       $isError = true;
-      $errorMsg = $errorMsg . "name must be supplied <br>";
+      $errorMsg = $errorMsg . "Name must be supplied <br>";
     }
     if (!(!isset($_POST['length']) || $_POST['length']=='' || $_POST['length'] == NULL)){
       if(!is_numeric($_POST['length'])){
         $isError = true;
-        $errorMsg = $errorMsg . "length must be numeric <br>";
+        $errorMsg = $errorMsg . "Length must be numeric <br>";
       }
       else if($_POST['length']<0){
         $isError = true;
-        $errorMsg = $errorMsg . "length must a positive number <br>";
+        $errorMsg = $errorMsg . "Length must a positive number <br>";
       }
     } 
 
@@ -78,8 +78,12 @@ if(isset($_POST['ACTION'])){
         else $errorMsg = $errorMsg . "Error adding {$_POST['name']} to records <br>";
       }
 
-      if($categorySelected){
-        //TODO, IF ADDED MOVIE IS NOT IN THIS CATEGORY, DESELECT CATEGORY
+      //TODO, IF ADDED MOVIE IS NOT IN THIS CATEGORY, DESELECT CATEGORY
+      if(isset($_POST['category']) && $_POST['category'] != $_POST['categoryADD']){
+        $isError = true;
+        $errorMsg = $errorMsg . "Your new movie is not in:{$_POST['category']}, Showing all movies <br>";
+        unset($_POST['category']);
+
       }
 
     }
@@ -121,7 +125,7 @@ if( isset($_POST['category']) ){
     $hiddenCategory = "<input type='hidden' name='category' value='$categorySelected'>";
   } else {
     $isError = true;
-    $errorMsg = $errorMsg . "there are no more {$_POST['category']} movies remaining, showing all movies <br>";
+    $errorMsg = $errorMsg . "There are no more {$_POST['category']} movies remaining, showing all movies <br>";
   }
 
 }
